@@ -2,7 +2,8 @@ import { Button } from "./ui/button";
 import { buttonVariants } from "./ui/button";
 import { HeroCards } from "./HeroCards";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-
+import deepfake from "../assets/natsume-1.jpg"
+import fakelogo from '../assets/fakelogo.jpg'
 export const Hero = () => {
   return (
     <section className="container grid lg:grid-cols-2 place-items-center py-20 md:py-32 gap-10">
@@ -14,13 +15,13 @@ export const Hero = () => {
             </span>{" "}
             Detection
           </h1>{" "}
-          {/* for{" "}
+          By{" "}
           <h2 className="inline">
             <span className="inline bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] text-transparent bg-clip-text">
-              React
+              Pixel
             </span>{" "}
-            developers */}
-          {/* </h2> */}
+            Patrol
+           </h2> 
         </main>
 
         <p className="text-xl text-muted-foreground md:w-10/12 mx-auto lg:mx-0">
@@ -46,7 +47,8 @@ export const Hero = () => {
 
       {/* Hero cards sections */}
       <div className="z-10">
-        <HeroCards />
+        {/* <HeroCards /> */}
+        <img src={deepfake} alt="" />
       </div>
 
       {/* Shadow effect */}
