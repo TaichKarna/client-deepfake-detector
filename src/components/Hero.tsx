@@ -48,7 +48,7 @@ export const Hero = () => {
       {/* Hero cards sections */}
       <div className="z-10">
         {/* <HeroCards /> */}
-        <img src={deepfake} alt="" />
+        <img src={deepfake} alt="" className="" />
       </div>
 
       {/* Shadow effect */}

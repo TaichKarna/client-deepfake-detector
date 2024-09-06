@@ -1,38 +1,101 @@
-import { Statistics } from "./Statistics";
-import pilot from "../assets/pilot.png";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import ReactPlayer  from "react-player";
+import { useState } from "react";
+import {  Loader2 } from "lucide-react";
+import deepLogo from '../assets/Irujsl01.svg';
 
 export const About = () => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [videoURL, setVideoURL] = useState(null);
+  const [submitState, setSubmitState] = useState(null);
+  const [mean_confidence, setMean] = useState(null);
+
+    const handleFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const url = URL.createObjectURL(selectedFile);
+        setVideoURL(url);
+
+        setSubmitState(true);
+
+        if (!selectedFile) {
+            alert('Please select a video file.');
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            const response = await fetch('http://localhost:8000/api/v1/mlapp/upload',  {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log(data);
+            const {mean_confidence, cropped_images, playable_video } = data;
+
+            setVideoURL(`http://localhost:8000/api/static/videos/${playable_video}`)
+            setSubmitState(false);
+            setMean(mean_confidence);
+        } catch (error) {
+            console.error('Error uploading video:', error);
+        }
+    };
+
   return (
     <section
       id="about"
-      className="container py-24 sm:py-32"
+      className="container py-24 sm:py-32 max-w-5xl"
     >
-      <div className="bg-muted/50 border rounded-lg py-12">
-        <div className="px-6 flex flex-col-reverse md:flex-row gap-8 md:gap-12">
-          <img
-            src={pilot}
-            alt=""
-            className="w-[300px] object-contain rounded-lg"
-          />
-          <div className="bg-green-0 flex flex-col justify-between">
-            <div className="pb-6">
-              <h2 className="text-3xl md:text-4xl font-bold">
-                <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
-                  About{" "}
-                </span>
-                Company
-              </h2>
-              <p className="text-xl text-muted-foreground mt-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit
-                amet, consectetur adipiscing elit.
-              </p>
-            </div>
-
-            <Statistics />
+      <div className="bg-muted/50 border rounded-lg py-12 px-3">
+        <div className="mx-auto max-w-2xl flex flex-col gap-4">
+        <main className="text-lg md:text-3xl font-bold flex justify-center pb-5">
+            <h2>
+              Detect
+              <span className="inline bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] text-transparent bg-clip-text">
+              Deepfake
+            </span>{" "}
+           </h2> 
+        </main>
+        <div>
+         {videoURL && 
+          <ReactPlayer url={videoURL} controls></ReactPlayer>  
+          
+         }
+        </div>
+          <form onSubmit={handleSubmit}>
+            
+          <div className="flex gap-5 flex-col mx-auto max-w-md
+          ">
+            <Input type="file" onChange={handleFileChange} accept="video/*" />
+            <Button type="submit" disabled={submitState}>
+              {
+                  !submitState  ? "Upload your video" :
+                  <div className="flex gap-4 items-center">Uploading video 
+                    <span><Loader2 className="animate-spin"/></span>
+                  </div>
+              }
+            </Button>
           </div>
+          </form>
+            
+            <div>
+              {
+              mean_confidence && (
+                <>
+                <h4>Result: { mean_confidence > 0.5 ? "Real": "Fake"} </h4>
+                <h4>Confidence: {mean_confidence}</h4>
+                </>
+              )
+              }
+            </div>
         </div>
       </div>
     </section>
